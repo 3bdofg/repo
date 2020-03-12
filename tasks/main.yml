@@ -1,0 +1,25 @@
+---
+- name: mkdir for backup
+  file:
+    path: /etc/yum.repos.d/bak
+    state: directory
+  ignore_errors: yes
+- name: copy existent repos
+  shell: mv /etc/yum.repos.d/*.repo /etc/yum.repos.d/bak
+  ignore_errors: yes
+- name: copy new repo file
+  template:
+    src: remote.repo.j2
+    dest: "{{ remote_repo_path }}"
+    force: yes
+- name: copy zimbra repo file
+  template:
+    src: zimbra.repo.j2
+    dest: "{{ zimbra_repo_path }}"
+    force: yes
+#- name: update cache
+#  shell: yum check-update
+- name: Upgrade all the packages
+  yum:
+    name: '*'
+    state: latest
